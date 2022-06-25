@@ -28,14 +28,14 @@ import urllib
 #             return img_array
 
 
-@st.cache
+@st.experimental_memo
 def load_weights():
     url = 'https://github.com/Sekai-no-uragawa/aihack_ufo/releases/download/weights/one_class_weights.pt'
     filename = url.split('/')[-1]
     urllib.request.urlretrieve(url, filename)
     return filename
 
-@st.cache
+@st.experimental_memo
 def load_model(weights_file):
     model = torch.hub.load('ultralytics/yolov5', 'custom', path=weights_file)
     return model
