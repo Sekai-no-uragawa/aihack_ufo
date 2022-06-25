@@ -46,8 +46,8 @@ def main_page():
 
     c10, c20, c30 = st.columns([1, 6, 1])
     with c20:
-        st.title("Здоровые зубы - ***круто***")
-        st.subheader('Поиск кариеса по фотографии с помощью ИИ')
+        st.title("Технологии ИИ в детской стоматологии")
+        st.subheader('Поиск кариеса по фотографии с помощью технологий компьютерного зрения')
         st.write('''
         Данный сервис позволяет по загруженной вами фотографии зубов обнаружить возможный кариес и получить рекомендации для дальнейшего обследования у специалиста.\n
         **Внимание!** Сервис носит рекомендательный характер и позволяет лишь определить возможные внешние признаки кариеса, независимо от результатов, 
@@ -99,7 +99,8 @@ def main_page():
             st.image(im_base64)
             file.close()
     
-    st.markdown('<p class="big-font">Рекомендации для профилактики кариес</p>', unsafe_allow_html=True)
+    st.write('''___''')
+    st.markdown('<p class="big-font">Рекомендации для профилактики кариеса</p>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([2,1])
     lottie_path_teeth = 'data/28719-brush-teeth.json'
@@ -165,7 +166,7 @@ def main_page():
     
 def doctor_page():
     with st.columns([1,6,1])[1]:
-        st.title('Здоровые зубы - ***круто***')
+        st.title('Технологии ИИ в детской стоматологии')
         instructions = """
             Страница работника дошкольных/школьных учреждений
             """
@@ -193,17 +194,64 @@ def doctor_page():
         #image = base64.b64decode(json.loads(file.getvalue()))
         #st.write(image)
         #st.image(image)
+    pred_flag = False
     for i in range(int(id)):
+        st.write('''___''')
         col1, col2, col3, col4 = st.columns([1,1,1,2])
         last_name = col1.text_input('Фамилия', key = f'1{i}')
         first_name = col2.text_input('Имя', key = f'2{i}' )
         father_name = col3.text_input('Отчество', key = f'3{i}')
-        imgs_worker = col4.file_uploader('file upload', key = f'gen{i}')
+        imgs_worker = col4.file_uploader('file upload', key = f'gen{i}', accept_multiple_files=True)
         preview = col1.empty()
+        
         if imgs_worker:
-            expand = st.expander("Загруженные фото")
-            col1.expand.image(imgs_worker)
+            pred_flag = True
+            if last_name and first_name and father_name:
+                fio = f'{last_name} {first_name[0]}.{father_name[0]}.'
+            elif first_name and last_name:
+                fio = f'{last_name} {first_name[0]}.'
+            elif last_name:
+                fio = f'{last_name}'
+            else:
+                fio = f'учащегося №{str(i+1)}'
+            # if not first_name and not father_name:
+            #     if not last_name:
+            #         fio = f'учащегося №{str(i)}'
+            #     else:
+            #         fio = f'{last_name}'
+            # elif first_name and last_name:
+            #     fio = f'{last_name} {first_name[0]}.'
+            # elif last_name and first_name and father_name:
+            #     fio = f'{last_name} {first_name[0]}.{father_name[0]}.'
+            expand = st.expander(f"Загруженные фото для {fio}")
+            with col1:
+                expand.image(imgs_worker)
+    if pred_flag:
+        pred_button = st.button('Начать анализ', key=f'pred')
+        if pred_button:
+            image_array = []
+            st.write(st.session_state)
+            for key in st.session_state:
+                if 'gen' in key:
+                    for upload_images in st.session_state[key]:
+                        image_array.append((key[3:], upload_images))
+            st.write(image_array)
+            
+            weights_file = load_weights()
+            model = load_model(weights_file)
+            
+            data_to_out = pd.DataFrame(columns=['id', 'percent'])
 
+            pred_dict = dict()
+            for kid_id, one_image in image_array:
+                image = Image.open(one_image)
+                results = model(image, size=256)
+                df_pred = results.pandas().xyxy[0]
+                if df_pred.shape[0] != 0:
+                    pred_dict.setdefault(kid_id, [df_pred.confidence]).append(df_pred.confidence)
+            
+            data_to_out = [[k, np.max(v)] for k, v in pred_dict.items]
+            st.write(pd.DataFrame(data_to_out))
 
 
 def sidebar():
@@ -230,7 +278,7 @@ def sidebar():
 
     st.sidebar.markdown(
         '''
-        Автоматическая система, основанная на алгоритмах компьютерного зрения (Yolo)
+        Автоматическая система, основанная на алгоритмах компьютерного зрения (YOLOv5)
         Данная система позволяет:
         1. Самостоятельно проверить и получить рекомендации о внешнем состоянии зубов
         2. Сократить нагрузку на профильных специалистов в дошкольных/школьных учреждениях для проверки состояния зубов
@@ -239,7 +287,7 @@ def sidebar():
         даже непрофильными специалистами в школах и садах для получения списка рекомендуемых к дополнительному обследованию детей.
         \n
         ___
-        Developed by team **fit_predict**
+        Developed by team **fit_predict**\n
         2022 г.
         '''
     )
