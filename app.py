@@ -3,7 +3,6 @@
 # from PIL import Image
 # import os
 
-from pyrsistent import s
 import streamlit as st
 from streamlit_lottie import st_lottie
 import json
@@ -13,6 +12,8 @@ import base64
 import numpy as np
 import torch
 import urllib
+import pandas as pd
+import pydeck as pdk
 
 
 
@@ -83,7 +84,8 @@ def main_page():
         #content = file.getvalue()
     with c1:
         if isinstance(file, BytesIO):
-            show_file.image(file)
+            exp = st.expander("Загруженные фото", expanded=False)
+            exp.image(file)
             
             image = Image.open(file)
 
@@ -96,6 +98,68 @@ def main_page():
             im_base64 = Image.fromarray(results.imgs[0])
             st.image(im_base64)
             file.close()
+    
+    st.markdown('<p class="big-font">Рекомендации для профилактики кариес</p>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns([2,1])
+    lottie_path_teeth = 'data/28719-brush-teeth.json'
+    with open(lottie_path_teeth, "r") as f:
+        lottie_teeth = json.load(f)
+    with col2:
+        st_lottie(
+            lottie_teeth,
+            loop = True,
+            quality='high',
+            height=280,
+            width=280,
+            key = 'hello2',
+        )
+    with col1:
+        lst = ['Правильно чистить зубы',
+        'Использовать ополаскиватель для полости рта',
+        'Восполнять недостаток фтора',
+        'Избегать приема контрастной по температуре пищи',
+        'Регулярно посещать стоматолога']
+        for i in lst:
+            st.markdown("- " + i)
+
+    
+    st.markdown('<p class="big-font">Ближайшие стоматологические клиники</p>', unsafe_allow_html=True)
+    #MAP
+    df = pd.DataFrame(
+     [[55.7512656095198,37.60662577202603, 'Proffessor Clinic'],
+     [55.75690467127408,37.61402866890714, 'Smile'],
+     [55.7583938140869,37.609729497404224, 'Clinica #1'],
+     [55.74708381669314,37.63060834818813, 'Dental Art']],
+     columns=['lat', 'lon', 'name'])
+    st.pydeck_chart(pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    initial_view_state=pdk.ViewState(
+        latitude=55.75134389970574,
+        longitude=37.6172831338021,
+        zoom=13,
+        pitch=50,
+    ),
+    layers=[
+        pdk.Layer(
+        'ScatterplotLayer',
+        data=df,
+        get_position='[lon, lat]',
+        get_radius = 70,
+        get_color = ['255','30','30']
+        ),
+        pdk.Layer(
+        type='TextLayer',
+        data=df,
+        get_position='[lon, lat]',
+        get_text='name',
+        getTextAnchor= '"middle"',
+        get_alignment_baseline='"bottom"',
+        get_size=100,
+        sizeUnits='meters',
+        ),
+    ],
+))
 
                       
     
@@ -134,11 +198,11 @@ def doctor_page():
         last_name = col1.text_input('Фамилия', key = f'1{i}')
         first_name = col2.text_input('Имя', key = f'2{i}' )
         father_name = col3.text_input('Отчество', key = f'3{i}')
-        image = col4.file_uploader('file upload', key = f'gen{i}')
+        imgs_worker = col4.file_uploader('file upload', key = f'gen{i}')
         preview = col1.empty()
-        if image:
-            with st.expander("Загруженные фото"):
-                col1.preview.image(image)
+        if imgs_worker:
+            expand = st.expander("Загруженные фото")
+            col1.expand.image(imgs_worker)
 
 
 
