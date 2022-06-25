@@ -3,14 +3,37 @@
 # from PIL import Image
 # import os
 
+from pyrsistent import s
 import streamlit as st
 from streamlit_lottie import st_lottie
 import json
 from PIL import Image
 from io import BytesIO, StringIO
+import base64
+import numpy as np
+import torch
+
+
+
+def upload_image_ui(uploaded_image):
+    #uploaded_image = st.file_uploader("Please choose an image file", type=["png", "jpg", "jpeg"])
+    if uploaded_image is not None:
+        try:
+            image = Image.open(uploaded_image)
+        except Exception:
+            st.error("Error: Invalid image")
+        else:
+            img_array = np.array(image)
+            return img_array
+
+
+@st.cache
+def load_model():
+    model = torch.hub.load('ultralytics/yolov5', 'custom', path='temp/two_class_weights.pt')
+    return model
 
 def main_page():
-    file_types = ["png", "jpg"]
+    file_types = ["png", "jpg", "jpeg"]
 
     c10, c20, c30 = st.columns([1, 6, 1])
     with c20:
@@ -24,7 +47,6 @@ def main_page():
         _Пример фото для загрузки_:
         ''')
     
-
 
     _, c1, c2, _= st.columns([1, 3, 3, 1])
     
@@ -54,30 +76,57 @@ def main_page():
     with c1:
         if isinstance(file, BytesIO):
             show_file.image(file)
+            
+            image = Image.open(file)
+
+            model = load_model()
+
+            results = model(image, size=256)
+
+            results.render()
+            im_base64 = Image.fromarray(results.imgs[0])
+            st.image(im_base64)
             file.close()
 
-
+                      
+    
 def doctor_page():
-    st.title('РОТОВАЯ ПОЛОСТЬ cheeeck')
-    instructions = """
-        Загрузи свою ротовую полость и узнай все свои секреты
-        """
-    st.write(instructions)
-
-    #TABLE
+    with st.columns([1,6,1])[1]:
+        st.title('Здоровые зубы - ***круто***')
+        instructions = """
+            Страница работника дошкольных/школьных учреждений
+            """
+        st.subheader(instructions)
+        st.write('Предлагается выбрать кол-во людей для проверки')
+    
+    #Table
     col1, col2, buff2 = st.columns([1,3,1])
-    id = col1.number_input('Введите id ребёнка',step=1, key ="but1")
-    file = col2.file_uploader('Загрузите', type = 'json')
+    id = col1.number_input('Введите кол-во детей',step=1, key ="but1")
+    st.write('Предлагается выбрать кол-во людей для проверки')
     buff2.title('')
-    
-    
-    if file is not None:
-        st.write(file)
-        st.write(file.getvalue())
-        st.write(file.getvalue().decode("utf-8"))
 
+    def show_img(file):
+        json_file = json.loads(file.getvalue())
+        image = base64.b64decode(json_file[0]['data'])
+        st.image(image)
 
-    
+    # if file is not None:
+    #     show_img(file)
+        #st.write(file)
+        #st.write(file.getvalue())
+        #st.write(file.getvalue().decode("utf-8"))
+        #lottie_json = load_lottieurl(file.name)
+        #st_lottie(file.getvalue())
+        #image = base64.b64decode(json.loads(file.getvalue()))
+        #st.write(image)
+        #st.image(image)
+    for i in range(id):
+        col1, col2, col3, col4 = st.columns([1,1,1,2])
+        col1.text_input('Фамилия', key = f'1{i}')
+        col2.text_input('Имя', key = f'2{i}' )
+        col3.text_input('Отчество', key = f'3{i}')
+        image = upload_image_ui() #(col4.file_uploader('file upload', key = f'gen{i}'))
+
 
 
 def sidebar():
