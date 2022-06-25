@@ -188,7 +188,7 @@ if __name__ == '__main__':
     )
 
     # STYLES
-    with open('data\style.css') as f:
+    with open('data/style.css') as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html = True)
     
     sidebar()
