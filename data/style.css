@@ -1,0 +1,48 @@
+/* body {
+	background: linear-gradient(-45deg, #fcf1ee, #f8e9ee, #e6f3f8, #ebfcf7);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+	height: 100vh;
+    }
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 80% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+    } */
+
+.css-zbg2rx   {
+    padding-top: 0rem;
+    padding-right: 0rem;
+    padding-bottom: 0rem;
+    padding-left: 0rem;
+    }
+.css-1gx893w  {
+    padding-top: 0rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-bottom: 2rem;
+    }
+
+.css-x4c2m8 {
+    padding-bottom: -2rem;
+}
+
+iframe {
+    padding-left: 2rem;
+    padding-bottom: 2rem;
+}
+
+.css-fg4pbf  {
+    background: transparent;
+}
+
+.st-de {
+    border-color:transparent;
+}

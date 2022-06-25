@@ -12,7 +12,7 @@ from io import BytesIO, StringIO
 def main_page():
     file_types = ["png", "jpg"]
 
-    c10, c20, c30 = st.columns([1, 4, 1])
+    c10, c20, c30 = st.columns([1, 6, 1])
     with c20:
         st.title("Здоровые зубы - ***круто***")
         st.subheader('Поиск кариеса по фотографии с помощью ИИ')
@@ -26,25 +26,25 @@ def main_page():
     
 
 
-    _, c1, c2, _= st.columns([1, 2, 2, 1])
+    _, c1, c2, _= st.columns([1, 3, 3, 1])
     
     with c1:
-        example1 = Image.open("data/teeth_example1.jpg")
+        example1 = Image.open("data/teeth_example4.jpg")
         st.image(example1)
     with c2:
-        example2 = Image.open('data/teeth_example2.jpg')
+        example2 = Image.open('data/teeth_example3.jpg')
         st.image(example2)
 
     
 
-    c10, c20, c30 = st.columns([1, 4, 1])
+    c10, c20, c30 = st.columns([1, 6, 1])
     with c20:
         st.write('''
         ___
         Загрузите Ваше фото ниже:
         ''')
 
-    _, c1, _= st.columns([1, 3, 1])
+    _, c1, _= st.columns([1, 4, 1])
     with c1:
         file = st.file_uploader("Upload file", type=file_types)
         show_file = st.empty()
@@ -58,7 +58,26 @@ def main_page():
 
 
 def doctor_page():
-    pass
+    st.title('РОТОВАЯ ПОЛОСТЬ cheeeck')
+    instructions = """
+        Загрузи свою ротовую полость и узнай все свои секреты
+        """
+    st.write(instructions)
+
+    #TABLE
+    col1, col2, buff2 = st.columns([1,3,1])
+    id = col1.number_input('Введите id ребёнка',step=1, key ="but1")
+    file = col2.file_uploader('Загрузите', type = 'json')
+    buff2.title('')
+    
+    
+    if file is not None:
+        st.write(file)
+        st.write(file.getvalue())
+        st.write(file.getvalue().decode("utf-8"))
+
+
+    
 
 
 def sidebar():
@@ -77,7 +96,7 @@ def sidebar():
             loop = True,
             quality='high',
             height=300,
-            width=200,      
+            width=200,
         )
 
     selected_page = st.sidebar.selectbox("Выбрать страницу", page_names_to_funcs.keys())
@@ -106,6 +125,10 @@ if __name__ == '__main__':
         layout="wide",
     )
 
+    # STYLES
+    with open('data\style.css') as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html = True)
+    
     sidebar()
     
     
