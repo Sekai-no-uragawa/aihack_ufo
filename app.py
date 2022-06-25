@@ -12,24 +12,32 @@ from io import BytesIO, StringIO
 import base64
 import numpy as np
 import torch
+import urllib
 
 
 
-def upload_image_ui(uploaded_image):
-    #uploaded_image = st.file_uploader("Please choose an image file", type=["png", "jpg", "jpeg"])
-    if uploaded_image is not None:
-        try:
-            image = Image.open(uploaded_image)
-        except Exception:
-            st.error("Error: Invalid image")
-        else:
-            img_array = np.array(image)
-            return img_array
+# def upload_image_ui():
+#     uploaded_image = st.file_uploader("Please choose an image file", type=["png", "jpg", "jpeg"])
+#     if uploaded_image is not None:
+#         try:
+#             image = Image.open(uploaded_image)
+#         except Exception:
+#             st.error("Error: Invalid image")
+#         else:
+#             img_array = np.array(image)
+#             return img_array
 
 
 @st.cache
-def load_model():
-    model = torch.hub.load('ultralytics/yolov5', 'custom', path='temp/two_class_weights.pt')
+def load_weights():
+    url = 'https://github.com/Sekai-no-uragawa/aihack_ufo/releases/download/weights/one_class_weights.pt'
+    filename = url.split('/')[-1]
+    urllib.request.urlretrieve(url, filename)
+    return filename
+
+@st.cache
+def load_model(weights_file):
+    model = torch.hub.load('ultralytics/yolov5', 'custom', path=weights_file)
     return model
 
 def main_page():
@@ -79,7 +87,8 @@ def main_page():
             
             image = Image.open(file)
 
-            model = load_model()
+            weights_file = load_weights()
+            model = load_model(weights_file)
 
             results = model(image, size=256)
 
@@ -120,12 +129,16 @@ def doctor_page():
         #image = base64.b64decode(json.loads(file.getvalue()))
         #st.write(image)
         #st.image(image)
-    for i in range(id):
+    for i in range(int(id)):
         col1, col2, col3, col4 = st.columns([1,1,1,2])
-        col1.text_input('Фамилия', key = f'1{i}')
-        col2.text_input('Имя', key = f'2{i}' )
-        col3.text_input('Отчество', key = f'3{i}')
-        image = upload_image_ui() #(col4.file_uploader('file upload', key = f'gen{i}'))
+        last_name = col1.text_input('Фамилия', key = f'1{i}')
+        first_name = col2.text_input('Имя', key = f'2{i}' )
+        father_name = col3.text_input('Отчество', key = f'3{i}')
+        image = col4.file_uploader('file upload', key = f'gen{i}')
+        preview = col1.empty()
+        if image:
+            with st.expander("Загруженные фото"):
+                col1.preview.image(image)
 
 
 
