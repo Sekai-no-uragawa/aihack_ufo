@@ -249,6 +249,8 @@ def doctor_page():
                 df_pred = results.pandas().xyxy[0]
                 if df_pred.shape[0] != 0:
                     pred_dict.setdefault(kid_id, [df_pred.confidence]).append(df_pred.confidence)
+                else:
+                    pred_dict.setdefault(kid_id, 0).append(0)
             
             data_to_out = [[k, np.max(v)] for k, v in pred_dict.items()]
             st.write(pd.DataFrame(data_to_out))
