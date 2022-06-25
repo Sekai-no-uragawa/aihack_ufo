@@ -248,7 +248,7 @@ def doctor_page():
                 results = model(image, size=256)
                 df_pred = results.pandas().xyxy[0]
                 if df_pred.shape[0] != 0:
-                    pred_dict.setdefault(kid_id, [df_pred.confidence]).append(df_pred.confidence)
+                    pred_dict.setdefault(kid_id, [df_pred.confidence.max()]).append(df_pred.confidence.max())
                 else:
                     pred_dict.setdefault(kid_id, [0]).append(0)
             
