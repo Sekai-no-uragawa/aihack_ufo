@@ -78,7 +78,7 @@ def main_page():
 
             results.render()
             im_base64 = Image.fromarray(results.imgs[0])
-            st.image(im_base64)
+            st.image(im_base64, width=600)
             file.close()
 
             df_pred = results.pandas().xyxy[0]
