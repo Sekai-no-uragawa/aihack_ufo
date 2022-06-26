@@ -261,7 +261,12 @@ def doctor_page():
             
             data_to_out = [[k, id_name_dict[int(k)], np.max(v)] for k, v in pred_dict.items()]
             st.write(pd.DataFrame(data_to_out, columns=['id', 'Имя проверяемого','Вероятность наличия кариеса, %']))
-
+            st.write('''___''')
+            with st.expander(f"Просмотреть результаты детекции"):
+                for kid_id, res_img in image_array:
+                    img = Image.open(res_img)
+                    st.image(img, caption=id_name_dict[kid_id], width=600)
+            
 
 def sidebar():
     page_names_to_funcs = {
