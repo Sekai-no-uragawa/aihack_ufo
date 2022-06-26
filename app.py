@@ -265,7 +265,7 @@ def doctor_page():
             with st.expander(f"Просмотреть результаты детекции"):
                 for kid_id, res_img in image_array:
                     img = Image.open(res_img)
-                    st.image(img, caption=id_name_dict[kid_id], width=600)
+                    st.image(img, caption=id_name_dict[int(kid_id)], width=600)
             
 
 def sidebar():
