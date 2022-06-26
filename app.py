@@ -259,7 +259,7 @@ def doctor_page():
                 else:
                     pred_dict.setdefault(kid_id, [0]).append(0)
             
-            data_to_out = [[k, id_name_dict[k], np.max(v)] for k, v in pred_dict.items()]
+            data_to_out = [[k, id_name_dict[int(k)], np.max(v)] for k, v in pred_dict.items()]
             st.write(pd.DataFrame(data_to_out, columns=['id', 'Имя проверяемого','Вероятность наличия кариеса, %']))
 
 
