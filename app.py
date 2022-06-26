@@ -1,8 +1,3 @@
-# import json
-# from io import BytesIO
-# from PIL import Image
-# import os
-
 import streamlit as st
 from streamlit_lottie import st_lottie
 import json
@@ -14,19 +9,6 @@ import torch
 import urllib
 import pandas as pd
 import pydeck as pdk
-
-
-
-# def upload_image_ui():
-#     uploaded_image = st.file_uploader("Please choose an image file", type=["png", "jpg", "jpeg"])
-#     if uploaded_image is not None:
-#         try:
-#             image = Image.open(uploaded_image)
-#         except Exception:
-#             st.error("Error: Invalid image")
-#         else:
-#             img_array = np.array(image)
-#             return img_array
 
 
 @st.experimental_memo
@@ -123,7 +105,6 @@ def main_page():
         'Регулярно посещать стоматолога']
         for i in lst:
             st.markdown("- " + i)
-
     
     st.markdown('<p class="big-font">Ближайшие стоматологические клиники</p>', unsafe_allow_html=True)
     #MAP
@@ -161,8 +142,6 @@ def main_page():
         ),
     ],
 ))
-
-                      
     
 def doctor_page():
     with st.columns([1,6,1])[1]:
@@ -184,16 +163,6 @@ def doctor_page():
         image = base64.b64decode(json_file[0]['data'])
         st.image(image)
 
-    # if file is not None:
-    #     show_img(file)
-        #st.write(file)
-        #st.write(file.getvalue())
-        #st.write(file.getvalue().decode("utf-8"))
-        #lottie_json = load_lottieurl(file.name)
-        #st_lottie(file.getvalue())
-        #image = base64.b64decode(json.loads(file.getvalue()))
-        #st.write(image)
-        #st.image(image)
     pred_flag = False
 
     id_name_dict = {}
@@ -221,15 +190,7 @@ def doctor_page():
                 id_name_dict.setdefault(i, fio)
             else:
                 id_name_dict.setdefault(i, f'Пользователь №{i+1}')
-            # if not first_name and not father_name:
-            #     if not last_name:
-            #         fio = f'учащегося №{str(i)}'
-            #     else:
-            #         fio = f'{last_name}'
-            # elif first_name and last_name:
-            #     fio = f'{last_name} {first_name[0]}.'
-            # elif last_name and first_name and father_name:
-            #     fio = f'{last_name} {first_name[0]}.{father_name[0]}.'
+
             expand = st.expander(f"Загруженные фото для {fio}")
             with col1:
                 expand.image(imgs_worker)
@@ -237,12 +198,10 @@ def doctor_page():
         pred_button = st.button('Начать анализ', key=f'pred')
         if pred_button:
             image_array = []
-            st.write(st.session_state)
             for key in st.session_state:
                 if 'gen' in key:
                     for upload_images in st.session_state[key]:
                         image_array.append((key[3:], upload_images))
-            st.write(image_array)
             
             weights_file = load_weights()
             model = load_model(weights_file)
@@ -268,9 +227,7 @@ def doctor_page():
                 for kid_id, res_img in pred_res:
                     res_img.render()
                     im_base64 = Image.fromarray(res_img.imgs[0])
-                    st.image(im_base64, caption=id_name_dict[int(kid_id)], width=600)
-                    
-            
+                    st.image(im_base64, caption=id_name_dict[int(kid_id)], width=600)        
 
 def sidebar():
     page_names_to_funcs = {
