@@ -163,8 +163,8 @@ def doctor_page():
         image = base64.b64decode(json_file[0]['data'])
         st.image(image)
 
+    file_types = ["png", "jpg", "jpeg"]
     pred_flag = False
-
     id_name_dict = {}
     for i in range(int(id)):
         st.write('''___''')
@@ -172,7 +172,7 @@ def doctor_page():
         last_name = col1.text_input('Фамилия', key = f'1{i}')
         first_name = col2.text_input('Имя', key = f'2{i}' )
         father_name = col3.text_input('Отчество', key = f'3{i}')
-        imgs_worker = col4.file_uploader('file upload', key = f'gen{i}', accept_multiple_files=True)
+        imgs_worker = col4.file_uploader('file upload', key = f'gen{i}', accept_multiple_files=True, type=file_types)
         preview = col1.empty()
         
         if imgs_worker:
