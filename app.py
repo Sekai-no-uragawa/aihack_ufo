@@ -250,9 +250,11 @@ def doctor_page():
             data_to_out = pd.DataFrame(columns=['id', 'percent'])
 
             pred_dict = dict()
+            pred_res = []
             for kid_id, one_image in image_array:
                 image = Image.open(one_image)
                 results = model(image, size=256)
+                pred_res.append((kid_id, results))
                 df_pred = results.pandas().xyxy[0]
                 if df_pred.shape[0] != 0:
                     pred_dict.setdefault(kid_id, [df_pred.confidence.max()*100]).append(df_pred.confidence.max()*100)
@@ -263,9 +265,11 @@ def doctor_page():
             st.write(pd.DataFrame(data_to_out, columns=['id', 'Имя проверяемого','Вероятность наличия кариеса, %']))
             st.write('''___''')
             with st.expander(f"Просмотреть результаты детекции"):
-                for kid_id, res_img in image_array:
-                    img = Image.open(res_img)
-                    st.image(img, caption=id_name_dict[int(kid_id)], width=600)
+                for kid_id, res_img in pred_res:
+                    res_img.render()
+                    im_base64 = Image.fromarray(res_img.imgs[0])
+                    st.image(im_base64, caption=id_name_dict[int(kid_id)], width=600)
+                    
             
 
 def sidebar():
