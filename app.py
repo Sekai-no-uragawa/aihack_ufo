@@ -80,7 +80,19 @@ def main_page():
             im_base64 = Image.fromarray(results.imgs[0])
             st.image(im_base64)
             file.close()
-    
+
+            df_pred = results.pandas().xyxy[0]
+            if df_pred.shape[0] != 0:
+                st.subheader('Внимание!')
+                st.write(f'''У вас высокая вероятность наличия кариеса! Рекомендуем обратиться к стоматологу для дальнейшей классификации\n
+                Наш ИИ уверен в этом на {round(df_pred.confidence.max()*100, 2)}%
+                ''')
+            else:
+                st.subheader('Поздравлем!')
+                st.write('''
+                Наш ИИ не обнаружил у Вас кариес! Но в целях профилактики придерживайтесь описанных ниже требований и не забывайте регулярно посещать врача!
+                ''')
+
     st.write('''___''')
     st.markdown('<p class="big-font">Рекомендации для профилактики кариеса</p>', unsafe_allow_html=True)
 
@@ -216,7 +228,7 @@ def doctor_page():
                 pred_res.append((kid_id, results))
                 df_pred = results.pandas().xyxy[0]
                 if df_pred.shape[0] != 0:
-                    pred_dict.setdefault(kid_id, [df_pred.confidence.max()*100]).append(df_pred.confidence.max()*100)
+                    pred_dict.setdefault(kid_id, [round(df_pred.confidence.max()*100, 2)]).append(round(df_pred.confidence.max()*100, 2))
                 else:
                     pred_dict.setdefault(kid_id, [0]).append(0)
             
