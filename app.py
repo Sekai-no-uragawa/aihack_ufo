@@ -85,7 +85,7 @@ def main_page():
             if df_pred.shape[0] != 0:
                 st.subheader('Внимание!')
                 st.write(f'''У вас высокая вероятность наличия кариеса! Рекомендуем обратиться к стоматологу для дальнейшей классификации\n
-                Наш ИИ уверен в этом на {round(df_pred.confidence.max()*100, 2)}%
+                Наш ИИ уверен в этом на **{round(df_pred.confidence.max()*100, 2)}%**
                 ''')
             else:
                 st.subheader('Поздравлем!')
