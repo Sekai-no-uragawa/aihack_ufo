@@ -195,6 +195,8 @@ def doctor_page():
         #st.write(image)
         #st.image(image)
     pred_flag = False
+
+    id_name_dict = {}
     for i in range(int(id)):
         st.write('''___''')
         col1, col2, col3, col4 = st.columns([1,1,1,2])
@@ -214,6 +216,11 @@ def doctor_page():
                 fio = f'{last_name}'
             else:
                 fio = f'учащегося №{str(i+1)}'
+            
+            if '№' not in fio:
+                id_name_dict.setdefault(i, fio)
+            else:
+                id_name_dict.setdefault(i, f'Пользователь №{i+1}')
             # if not first_name and not father_name:
             #     if not last_name:
             #         fio = f'учащегося №{str(i)}'
@@ -252,8 +259,8 @@ def doctor_page():
                 else:
                     pred_dict.setdefault(kid_id, [0]).append(0)
             
-            data_to_out = [[k, np.max(v)] for k, v in pred_dict.items()]
-            st.write(pd.DataFrame(data_to_out, columns=['id', 'Вероятность наличия кариеса, %']))
+            data_to_out = [[k, id_name_dict[k], np.max(v)] for k, v in pred_dict.items()]
+            st.write(pd.DataFrame(data_to_out, columns=['id', 'Имя проверяемого','Вероятность наличия кариеса, %']))
 
 
 def sidebar():
