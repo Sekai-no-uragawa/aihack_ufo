@@ -42,7 +42,7 @@ def main_page():
     _, c1, c2, _= st.columns([1, 3, 3, 1])
     
     with c1:
-        example1 = Image.open("data/teeth_example4.jpg")
+        example1 = Image.open("data/teeth_example5.png")
         st.image(example1)
     with c2:
         example2 = Image.open('data/teeth_example3.jpg')
@@ -85,7 +85,7 @@ def main_page():
             if df_pred.shape[0] != 0:
                 st.subheader('Внимание!')
                 st.markdown(f'''У вас высокая вероятность наличия кариеса! Рекомендуем обратиться к стоматологу для дальнейшей классификации\n
-                Наш ИИ уверен в этом на **{round(df_pred.confidence.max()*100, 2)}%**
+                Наш ИИ уверен в этом на {round(df_pred.confidence.max()*100, 2)}%
                 ''')
             else:
                 st.subheader('Поздравлем!')
